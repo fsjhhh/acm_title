@@ -127,7 +127,7 @@ void modify(int u, int l, int r, int x)
 		return ;
 	}
 	push_down(u);
-	int mid = tr[u].l + tr[u].r >> 1;
+	int mid = (tr[u].l + tr[u].r) >> 1;
 	if (l <= mid)
 		modify(u << 1, l, r, x);
 	if (r > mid)
@@ -140,7 +140,7 @@ int query(int u, int l, int r)
 	if (l <= tr[u].l && r >= tr[u].r)
 		return tr[u].sum;
 	push_down(u);
-	int mid = tr[u].l + tr[u].r >> 1;
+	int mid = (tr[u].l + tr[u].r) >> 1;
 	int sum = 0;
 	if (l <= mid)
 		sum = (sum + query(u << 1, l, r)) % mod;
