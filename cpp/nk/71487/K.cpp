@@ -29,20 +29,21 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-void solve(int t) {
-    double x, b;
-    scanf("%lf%lf", &x, &b);
-    double ans = (std::pow(x, b) - std::pow(x - 1, b)) * (x + 1) * x / (std::pow(x, b) * 2);
-    printf("Case #%d: %.3lf\n", t, ans);
+const double pi = acos(-1.0);
+
+void solve() {
+    LL n;
+    std::cin >> n;
+    n <<= 1;
+    double deg = pi * (n - 2) / (n + n);
+    std::cout << std::fixed << std::setprecision(10) << cos(pi / n / 2) / cos(deg) << "\n";
 }
 
 int main() {
     IOS;
-    int t = 1, z = 0;
-    scanf("%d", &t);
-    while (t -- ) {
-    	z ++ ;
-        solve(z);
-    }
+    int t = 1;
+    std::cin >> t;
+    while (t -- )
+        solve();
     return 0;
 }
