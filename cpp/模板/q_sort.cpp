@@ -15,9 +15,9 @@ int a[N];
 
 void q_sort(int l, int r)
 {
-	if(l >= r) return ; //排序已经完成 
+	if(l >= r) return ;
 	
-	int i = l - 1, j = r + 1, x = a[(l + r) >> 1]; // 以x为基准，其左边小于x，右边大于x 
+	int i = l - 1, j = r + 1, x = a[(l + r) >> 1];
 	while(i < j)
 	{
 		do{i ++ ;} while(a[i] < x);
@@ -25,8 +25,8 @@ void q_sort(int l, int r)
 		if(i < j) swap(a[i], a[j]);
 	}
 	
-	q_sort(l, j); // 递归左边 
-	q_sort(j + 1, r); // 递归右边 
+	q_sort(l, j);
+	q_sort(j + 1, r);
 	
 }
 

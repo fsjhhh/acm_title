@@ -14,6 +14,7 @@
 #include <array>
 #include <bitset>
 #include <functional>
+#include <ranges>
 //#include <bits/stdc++.h>
 //priority_queue 优先队列
 #define IOS                           \
@@ -28,30 +29,44 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct Node {
-    int D;
-    LL Min, Max;
-};
+#define int long long
 
 void solve() {
-    std::string s;
-    std::cin >> s;
-    int n = s.size();
-    LL ans = 0;
-    for (int i = 0; i < n - 1; i++) {
-        if (s[i] == s[i + 1] || s[i] == '?' || s[i + 1] == '?') {
-            ans ++ ;
-            i ++ ;
-        } 
+    int n;
+    std::cin >> n;
+    std::vector<LL> v(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> v[i];
     }
-    std::cout << ans << "\n";
+    std::sort(v.begin(), v.end());
+    LL k;
+    std::cin >> k;
 
+    int l = v[0] + v[1];
+    int r = v[n - 1] + v[n - 2];
+
+    while (l < r) {
+        int mid = (l + r) / 2;
+        int count = 0;
+
+        for (int i = 0; i < n - 1; i++) {
+            count += upper_bound(v.begin() + i + 1, v.end(), mid - v[i]) - (v.begin() + i + 1);
+        }
+
+        if (count < k) {
+            l = mid + 1;
+        } else {
+            r = mid;
+        }
+    }
+
+    std::cout << l << "\n";
 }
 
-int main() {
+signed main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

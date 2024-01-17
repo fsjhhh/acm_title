@@ -14,6 +14,7 @@
 #include <array>
 #include <bitset>
 #include <functional>
+#include <ranges>
 //#include <bits/stdc++.h>
 //priority_queue 优先队列
 #define IOS                           \
@@ -28,30 +29,28 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct Node {
-    int D;
-    LL Min, Max;
-};
-
 void solve() {
-    std::string s;
-    std::cin >> s;
-    int n = s.size();
-    LL ans = 0;
-    for (int i = 0; i < n - 1; i++) {
-        if (s[i] == s[i + 1] || s[i] == '?' || s[i + 1] == '?') {
-            ans ++ ;
-            i ++ ;
-        } 
+    int n;
+    std::cin >> n;
+    std::string s, f;
+    std::cin >> s >> f;
+    int _0 = 0, _1 = 0;
+    for (int i = 0; i < n; i++) {
+        if (s[i] != f[i]) {
+            if (s[i] == '1') {
+                _1 ++ ;
+            } else {
+                _0 ++ ;
+            }
+        }
     }
-    std::cout << ans << "\n";
-
+    std::cout << std::max(_0, _1) << "\n";
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

@@ -14,6 +14,7 @@
 #include <array>
 #include <bitset>
 #include <functional>
+#include <ranges>
 //#include <bits/stdc++.h>
 //priority_queue 优先队列
 #define IOS                           \
@@ -28,23 +29,42 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct Node {
-    int D;
-    LL Min, Max;
-};
+const LL mod = 998244353;
 
 void solve() {
+    int n;
+    std::cin >> n;
     std::string s;
     std::cin >> s;
-    int n = s.size();
-    LL ans = 0;
-    for (int i = 0; i < n - 1; i++) {
-        if (s[i] == s[i + 1] || s[i] == '?' || s[i + 1] == '?') {
-            ans ++ ;
-            i ++ ;
-        } 
+    std::vector dp(26, std::vector(26, std::vector<LL>(n + 1)));
+    
+    std::vector C(n + 1, std::vector<LL>(n + 1));
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= i; j++) {
+            if (!j) {
+                C[i][j] = 1;
+                continue;
+            }
+            C[i][j] = (C[i - 1][j] + C[i - 1][j - 1]) % mod;
+        }
     }
-    std::cout << ans << "\n";
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            for (int k = 2; k <= j - i + 1; k++) {
+                (dp[s[i] - 'a'][s[j] - 'a'][k] += C[j - i - 1][k - 2]) %= mod;
+            }
+        }
+    }
+
+    int q;
+    std::cin >> q;
+    while (q -- ) {
+        char x, y;
+        int k;
+        std::cin >> x >> y >> k;
+        std::cout << dp[x - 'a'][y - 'a'][k] << "\n";
+    }
 
 }
 

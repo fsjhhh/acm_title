@@ -14,6 +14,7 @@
 #include <array>
 #include <bitset>
 #include <functional>
+#include <ranges>
 //#include <bits/stdc++.h>
 //priority_queue 优先队列
 #define IOS                           \
@@ -28,23 +29,40 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct Node {
-    int D;
-    LL Min, Max;
-};
+const double eps = 1e-4;
 
 void solve() {
-    std::string s;
-    std::cin >> s;
-    int n = s.size();
-    LL ans = 0;
-    for (int i = 0; i < n - 1; i++) {
-        if (s[i] == s[i + 1] || s[i] == '?' || s[i + 1] == '?') {
-            ans ++ ;
-            i ++ ;
-        } 
+    int n;
+    std::cin >> n;
+    std::vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> a[i];
     }
-    std::cout << ans << "\n";
+
+    auto check = [&](double x) -> bool {
+        double ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += x;
+            LL z = ans;
+            if (z < a[i]) {
+                return true;
+            } else if (z > a[i]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    double l = 0, r = 1e9 + 10;
+    while (r - l > eps) {
+        double mid = (r + l) / 2;
+        if (check(mid)) {
+            l = mid;
+        } else {
+            r = mid;
+        }
+    }
+    std::cout << std::fixed << std::setprecision(10) << l << "\n";
 
 }
 
