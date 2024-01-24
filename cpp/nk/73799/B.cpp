@@ -31,13 +31,22 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    
+    LL n, k;
+    std::cin >> n >> k;
+    n = 10 * n;
+    LL ans = n / k;
+    if (ans >= 7 * 90) {
+        std::cout << "SHENLILINHUA WO LAI LA!!!" << "\n";
+    }
+    else {
+        std::cout << "SHENLILINHUA DENG DENG WO!!!" << "\n";
+    }
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

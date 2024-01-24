@@ -15,9 +15,8 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-// #include <bits/stdc++.h>
-// priority_queue 优先队列
-// std::cout.flush(); 交互题
+//#include <bits/stdc++.h>
+//priority_queue 优先队列
 #define IOS                           \
     std::ios::sync_with_stdio(false); \
     std::cin.tie(0);                  \
@@ -31,7 +30,22 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    
+    int n;
+    std::cin >> n;
+    LL sum_1 = 0, sum_2 = 0;
+    for (int i = 0; i < n; i++) {
+    	int x, y;
+    	std::cin >> x >> y;
+    	sum_1 += x;
+    	sum_2 += y;
+    }
+    if (sum_1 > sum_2) {
+    	std::cout << "Takahashi\n";
+    } else if (sum_1 < sum_2) {
+    	std::cout << "Aoki\n";
+    } else {
+    	std::cout << "Draw\n";
+    }
 }
 
 int main() {

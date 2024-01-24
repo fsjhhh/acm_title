@@ -31,7 +31,29 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    
+    int n;
+    std::cin >> n;
+    std::vector<int> a(n), b(n);
+    std::map<int, int> mp;
+    for (int i = 0; i < n; i++) {
+    	std::cin >> a[i];
+    	b[i] = a[i];
+    	mp[a[i]] = i;
+    }
+    std::sort(b.begin(), b.end());
+
+    int ans = 0;
+    for (int i = 0; i < n; i++) {
+    	if (a[i] == b[i]) {
+    		continue;
+    	}
+    	int j = mp[b[i]];
+    	std::swap(a[i], a[j]);
+    	mp[a[j]] = j;
+    	ans ++ ;
+    }
+    std::cout << ans << "\n";
+
 }
 
 int main() {

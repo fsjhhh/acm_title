@@ -31,7 +31,42 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    
+    int k;
+    std::cin >> k;
+    if (k == 1) {
+    	int q;
+    	std::cin >> q;
+    	while (q -- ) {
+    		LL x;
+    		std::cin >> x;
+    		std::cout << x - 1 << "\n";
+    	}
+    	return ;
+    }
+    std::vector<i128> cf = {1};
+    while (cf.back() * k <= 1e18) {
+    	cf.push_back(cf.back() * k);
+    }
+    for (int i = 1; i < (int)cf.size(); i++) {
+    	cf[i] += cf[i - 1];
+    }
+    int q;
+    std::cin >> q;
+    while (q -- ) {
+    	LL x;
+    	std::cin >> x;
+    	// double y = (x * (k - 1) * 1.0) / (k * 1.0) + 1;
+    	int l = 0, r = cf.size() - 1;
+    	while (l < r) {
+    		int mid = (l + r) >> 1;
+    		if (cf[mid] < x) {
+    			l = mid + 1;
+    		} else {
+    			r = mid;
+    		}
+    	}
+    	std::cout << l << "\n";
+    }
 }
 
 int main() {

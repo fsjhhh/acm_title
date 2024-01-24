@@ -15,8 +15,8 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-// #include <bits/stdc++.h>
-// priority_queue 优先队列
+//#include <bits/stdc++.h>
+//priority_queue 优先队列
 // std::cout.flush(); 交互题
 #define IOS                           \
     std::ios::sync_with_stdio(false); \
@@ -31,7 +31,41 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
+    int n;
+    std::cin >> n;
+    int m = std::ceil(log2(n));
+    // while ((1 << m) < n) {
+    // 	m ++ ;
+    // }
     
+    std::cout << m << "\n";
+    for (int i = 0; i < m; i++) {
+    	std::vector<int> z;
+    	for (int j = 0; j < n; j++) {
+    		if (j >> i & 1) {
+    			z.push_back(j + 1);
+    		}
+    	}
+    	std::cout << z.size() << " ";
+    	for (auto it : z) {
+    		std::cout << it << " ";
+    	}
+    	std::cout << "\n";
+    }
+    std::cout.flush();
+
+    std::string s;
+    std::cin >> s;
+    int ans = 0;
+    for (int i = 0; i < (int)s.size(); i++) {
+    	if (s[i] == '1') {
+    		ans += (1 << i);
+    	}
+    }
+
+    std::cout << ans + 1 << "\n";
+
+
 }
 
 int main() {

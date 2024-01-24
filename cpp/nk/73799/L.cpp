@@ -14,7 +14,6 @@
 #include <array>
 #include <bitset>
 #include <functional>
-#include <ranges>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,7 +30,13 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    
+    LL n;
+    while (std::cin >> n) {
+    	if (n > 1)
+            std::cout << "哼！哼！啊啊啊啊啊啊！" << "\n";
+        else
+            std::cout << "就这？就这？" << "\n";
+    }
 }
 
 int main() {
