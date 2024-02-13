@@ -1,5 +1,7 @@
-*.prob
-*.txt
-*.exe
-*.cpp__tests
-*.bin
+*
+
+!*.cpp
+!*.c
+!*.h
+
+!README.md
