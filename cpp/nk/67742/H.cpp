@@ -31,10 +31,14 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 #define int long long
+
 struct Node {
     int l, r;
     int sum;
-    int lazy;
+    int lmn, rmx;
+    int lans, rans;
+    int segans;
+    int ans;
 };
 
 struct SegmentTree {
@@ -51,6 +55,12 @@ struct SegmentTree {
 
     void merge_node(Node& res, Node x, Node y) {
         res.sum = x.sum + y.sum;
+        res.lmn = std::min(x.lmn, x.sum + y.lmn);
+        res.rmx = std::max(x.rmx + y.sum, y.rmx);
+        res.lans = std::max({x.lans, x.sum - y.lmn, x.segans - y.lmn, x.sum + y.lans});
+        res.rans = std::max({y.rans, x.rmx - y.sum, x.rmx + y.segans, x.rans - y.sum});
+        res.segans = std::max({x.sum - y.sum, x.segans - y.sum, x.sum + y.segans});
+        res.ans = std::max({x.rans - y.lmn, x.rmx + y.lans, x.ans, y.ans, x.rmx - y.lmn});
     }
 
     void push_up(int u) {
@@ -60,37 +70,25 @@ struct SegmentTree {
     void build(int u, int l, int r, std::vector<int>& w) {
         if (l == r) {
             tr[u].l = tr[u].r = r;
-            tr[u].lazy = 0;
-            tr[u].sum = w[l];
+            tr[u].sum = tr[u].lmn = tr[u].rmx = w[l];
+            tr[u].lans = tr[u].rans = tr[u].segans = tr[u].ans = -INFL;
             return ;
         }
         tr[u].l = l;
         tr[u].r = r;
-        tr[u].lazy = 0;
         int mid = (l + r) >> 1;
         build(u << 1, l, mid, w);
         build(u << 1 | 1, mid + 1, r, w);
         push_up(u);
     }
 
-    void push_down(int u) {
-        if (!tr[u].lazy) {
-            return ;
-        }
-        tr[u << 1].lazy += tr[u].lazy;
-        tr[u << 1].sum += tr[u].lazy * (tr[u << 1].r - tr[u << 1].l + 1);
-        tr[u << 1 | 1].lazy += tr[u].lazy;
-        tr[u << 1 | 1].sum += tr[u].lazy * (tr[u << 1 | 1].r - tr[u << 1 | 1].l + 1);
-        tr[u].lazy = 0;
-    }
-
     void modify(int u, int l, int r, int x) {
         if (l <= tr[u].l && r >= tr[u].r) {
-            tr[u].lazy += x;
-            tr[u].sum += x * (tr[u].r - tr[u].l + 1);
+            tr[u].sum = tr[u].lmn = tr[u].rmx = x;
+            tr[u].lans = tr[u].rans = tr[u].segans = tr[u].ans = -INFL;
             return ;
         }
-        push_down(u); // 单点修改可去掉
+        // push_down(u); // 单点修改可去掉
         int mid = (tr[u].l + tr[u].r) >> 1;
         if (l <= mid) {
             modify(u << 1, l, r, x);
@@ -105,7 +103,7 @@ struct SegmentTree {
         if (l <= tr[u].l && r >= tr[u].r) {
             return tr[u];
         }
-        push_down(u); /// 单点修改可去掉
+        // push_down(u); /// 单点修改可去掉
         bool ok = false;
         int mid = (tr[u].l + tr[u].r) >> 1;
         Node ans;
@@ -126,38 +124,38 @@ struct SegmentTree {
     }
 
 };
+
+
 void solve() {
-    int n, m;
-    std::cin >> n >> m;
-    SegmentTree tr(n + 1);
+    int n, q;
+    std::cin >> n >> q;
     std::vector<int> a(n + 1);
     for (int i = 1; i <= n; i++) {
         std::cin >> a[i];
     }
 
+    SegmentTree tr(n + 1);
     tr.build(1, 1, n, a);
-
-    while (m -- ) {
+    while (q -- ) {
         int op;
         std::cin >> op;
         if (op == 1) {
-            int x, y, k;
-            std::cin >> x >> y >> k;
-            tr.modify(1, x, y, k);
-        } else {
             int x, y;
             std::cin >> x >> y;
-            Node res = tr.query(1, x, y);
-            std::cout << res.sum << "\n";
+            tr.modify(1, x, x, y);
+        } else {
+            int l, r;
+            std::cin >> l >> r;
+            Node res = tr.query(1, l, r);
+            std::cout << res.ans << "\n";
         }
     }
-
 }
 
 signed main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

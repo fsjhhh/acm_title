@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,57 +30,38 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
-
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
-
 void solve() {
-    
+    int n;
+    std::cin >> n;
+    std::string s;
+    std::cin >> s;
+    std::map<char, int> mp;
+    bool ok_1 = false, ok_2 = false;
+    for (int i = 0; i < n; i++) {
+    	if (s[i] == 'd' || s[i] == 'D') {
+    		mp[s[i]] ++ ;
+    	}
+    	if (s[i] == 'f' && mp['d']) {
+    		mp[s[i]] ++ ;
+    	}
+    	if (s[i] == 'F' && mp['D']) {
+    		mp[s[i]] ++ ;
+    	}
+    	if (s[i] == 's' && mp['f']) {
+    		ok_2 = true;
+    	}
+    	if (s[i] == 'S' && mp['F']) {
+    		ok_1 = true;
+    	}
+    }
+
+    std::cout << ok_1 << " " << ok_2 << "\n";
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

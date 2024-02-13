@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,51 +30,38 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
-
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
-
 void solve() {
-    
+    int n, m;
+    std::cin >> n >> m;
+    std::vector<int> a(m);
+    for (int i = 0; i < m; i++) {
+    	std::cin >> a[i];
+    }
+
+    std::vector<LL> sum(n + 1, 0);
+    LL ans = 0;
+    for (int i = 1; i < m; i++) {
+    	int t1 = std::abs(a[i] - a[i - 1]);
+    	int t2 = std::min(a[i], a[i - 1]) + n - std::max(a[i], a[i - 1]);
+    	ans += std::min(t1, t2);
+    	if (t1 < t2) {
+    		sum[std::min(a[i], a[i - 1])] += (t2 - t1);
+    		sum[std::max(a[i], a[i - 1])] -= (t2 - t1);
+    	} else if (t1 > t2) {
+    		sum[1] += (t1 - t2);
+    		sum[std::min(a[i], a[i - 1])] -= (t1 - t2);
+    		sum[std::max(a[i], a[i - 1])] += (t1 - t2);
+    	}
+    }
+
+    LL mn = INFL;
+    for (int i = 1; i <= n; i++) {
+    	sum[i] += sum[i - 1];
+    	mn = std::min(mn, sum[i]);
+    }
+
+    std::cout << ans + mn << "\n";
+
 }
 
 int main() {

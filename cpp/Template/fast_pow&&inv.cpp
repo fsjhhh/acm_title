@@ -33,35 +33,35 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 const int mod = 998244353;
 
 int power(int a, int b) {
-	int res = 1;
-	while (b) {
-		if (b & 1) {
-			res = res * a % mod;
-		}
-		a = a * a % mod;
-		b >>= 1;
-	}
-	return res;
+    int res = 1;
+    while (b) {
+        if (b & 1) {
+            res = res * a % mod;
+        }
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return res;
 }
 
 int power(int a, int b, int p) {
-	int res = 1;
-	while (b) {
-		if (b & 1) {
-			res = res * a % p;
-		}
-		a = a * a % p;
-		b >>= 1;
-	}
-	return res;
+    int res = 1;
+    while (b) {
+        if (b & 1) {
+            res = res * a % p;
+        }
+        a = a * a % p;
+        b >>= 1;
+    }
+    return res;
 }
 
 int inv(int x) {
-	return power(x, mod - 2);
+    return power(x, mod - 2);
 }
 
 int inv(int x, int p) {
-	return power(x, p - 2, p);
+    return power(x, p - 2, p);
 }
 
 void solve() {

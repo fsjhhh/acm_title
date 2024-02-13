@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,51 +30,27 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
-
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
-
 void solve() {
-    
+    int n, m, k;
+    std::cin >> n >> m >> k;
+    std::vector mp(n + 2, std::vector<int>(m + 2, 0));
+    for (int i = 0; i < k; i++) {
+        int x, y;
+        std::cin >> x >> y;
+        mp[x][y] = 1;
+    }
+
+    int ans = 0;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (mp[i][j]) {
+                ans += 4;
+                ans -= (mp[i - 1][j] + mp[i][j - 1]);
+            }
+        }
+    }
+
+    std::cout << ans << "\n";
 }
 
 int main() {

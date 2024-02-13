@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,57 +30,39 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
+const int N = 1e6;
+const LL M = 1e12;
+std::set<LL> s;
+std::vector<LL> a;
 
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
+void init() {
+	s.insert(1);
+	for (LL i = 2; i <= N; i++) {
+		LL po = i * i;
+		while (po <= M) {
+			// std::cerr << i << " " << po << "\n";
+			s.insert(po);
+			po *= i;
+		}
+	}
+	for (auto it : s) {
+		a.push_back(it);
+	}
+}
 
 void solve() {
-    
+	LL n;
+	std::cin >> n;
+	auto it = std::upper_bound(a.begin(), a.end(), n) - a.begin();
+	std::cout << it << "\n";
+	
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    init();
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

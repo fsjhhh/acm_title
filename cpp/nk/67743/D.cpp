@@ -31,40 +31,32 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    int n;
-    std::cin >> n;
-    std::vector w(n + 1, std::vector<int>(n + 1, 0));
-    while (1) {
-        int x, y, s;
-        std::cin >> x >> y >> s;
-        if (!x) {
-            break;
-        }
-        w[x][y] = s;
+    int n, k;
+    std::cin >> n >> k;
+    std::vector<LL> a(n + 1), sum(n + 1);
+    for (int i = 1; i <= n; i++) {
+        std::cin >> a[i];
+        sum[i] = sum[i - 1] + a[i];
     }
-
-    std::vector dp(2 * n + 1, std::vector(n + 1, std::vector<int>(n + 1, 0)));
-    for (int k = 1; k <= 2 * n; k++) {
-        for (int i = 1; i <= n; i++) {
-            if (k - i < 0 || k - i > n) {
-                continue;
-            }
-            for (int j = 1; j <= n; j++) {
-                if (k - j < 0 || k - j > n) {
-                    continue;
+    LL ans = -INFL;
+    for (int i = 1; i <= n; i++) {
+        LL res = -INFL;
+        for (int j = 1; j <= i; j++) {
+            res = sum[i] - sum[j - 1];
+            if (k == 0) {
+                ans = std::max(res, ans);
+            } else {
+                if (j != 1) {
+                    res = std::max(res, res - a[j] + a[j - 1]);
+                } else if (i != n) {
+                    res = std::max(res, res - a[i] + a[i + 1]);
                 }
-                dp[k][i][j] = std::max({dp[k - 1][i - 1][j - 1], dp[k - 1][i - 1][j], dp[k - 1][i][j - 1], dp[k - 1][i][j]});
-                if (i == j && k - i == k - j) {
-                    dp[k][i][j] += w[i][k - i];
-                } else {
-                    dp[k][i][j] += (w[i][k - i] + w[j][k - j]);
-                }
+                ans = std::max(ans, res);
             }
         }
     }
 
-    std::cout << dp[2 * n][n][n] << "\n";
-
+    std::cout << ans << "\n";
 }
 
 int main() {

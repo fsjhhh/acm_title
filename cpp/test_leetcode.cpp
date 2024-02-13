@@ -28,69 +28,45 @@ typedef std::pair<int, int> PII;
 typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
+using namespace std;
 
 class Solution {
 public:
-    long long findMaximumNumber(long long k, int x) {
-        
-        auto calc = [&](LL w) -> LL {
-            std::string s;
-            while(w) {
-                s += (w % 2 + '0');
-                w /= 2;
-            }
+    int minimumPushes(string word) {
+        int n = word.size();
+        std::map<char, int> mp;
+        for (auto it : word) {
+            mp[it] ++ ;
+        }
+        std::vector<int> a;
+        for (auto [x, y] : mp) {
+            a.push_back(y);
+        }
 
-            int n = s.size();
-
-            std::vector dp(n, std::vector(n, std::vector(2, std::vector<LL>(2, -1))));
-            auto dfs = [&](auto self, int pos, int cnt, bool is_limit, bool is_zero) -> LL {
-                if (pos == -1) {
-                    return cnt;
-                }
-
-                if (dp[pos][cnt][is_limit][is_zero] != -1) {
-                    return dp[pos][cnt][is_limit][is_zero];
-                }
-
-                LL ans = 0;
-                for (int i = 0; i <= (is_limit ? (s[pos] - '0') : 1); i++) {
-                    if (is_zero && i == 0) {
-                        ans += self(self, pos - 1, cnt, (is_limit && i == s[pos] - '0'), true);
-                    } else {
-                        ans += self(self, pos - 1, cnt + ((pos + 1) % x == 0 && i == 1), (is_limit && i == s[pos] - '0'), false);
-                    }
-                }
-
-                dp[pos][cnt][is_limit][is_zero] = ans;
-                return ans;
-
-            };
-
-            return dfs(dfs, n - 1, 0, true, true);
-        };
-        
-        LL l = 1, r = (k + 1) << x;
-
-        while (l < r) {
-            LL mid = (l + r + 1) >> 1;
-            if (calc(mid) <= k) {
-                l = mid;
-            } else {
-                r = mid - 1;
+        std::sort(a.begin(), a.end(), std::greater());
+        int cnt = 1, num = 0, ans = 0;
+        for (auto it : a) {
+            ans += it * cnt;
+            num ++ ;
+            if (num == 8) {
+                cnt ++ ;
+                num = 0;
             }
         }
-        return l;
+
+        return ans;
+
     }
 };
 
 void solve() {
     Solution a_a;
-    LL k;
-    int x;
-    std::cin >> k >> x;
-    auto ans = a_a.findMaximumNumber(k, x);
+    std::string s;
+    std::cin >> s;
+    auto ans = a_a.minimumPushes(s);
 
-    std::cout << ans << "\n";
+    std::cout << ans;
+    std::cout << "\n";
 }
 
 int main() {

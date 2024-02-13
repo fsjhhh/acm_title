@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,51 +30,52 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
-
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
-
 void solve() {
-    
+    int n, x, y;
+    std::cin >> n >> x >> y;
+    std::vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+    	std::cin >> a[i];
+    }
+
+    auto check = [&](int d) -> bool {
+    	std::set<int> S;
+    	int lst = y;
+    	if (std::abs(x - y) <= d) {
+    		S.insert(x);
+    	}
+
+    	for (auto it : a) {
+    		if (!S.empty() && std::abs(it - lst) <= d) {
+    			S.insert(lst);
+    		}
+
+    		while (!S.empty() && *S.begin() < it - d) {
+    			S.erase(*S.begin());
+    		}
+
+    		while (!S.empty() && *S.rbegin() > it + d) {
+    			S.erase(*S.rbegin());
+    		}
+    		lst = it;
+    	}
+
+    	return !S.empty();
+
+    };
+
+    int l = 0, r = 1e9;
+    while (l < r) {
+    	int mid = (l + r) >> 1;
+    	if (check(mid)) {
+    		r = mid;
+    	} else {
+    		l = mid + 1;
+    	}
+    }
+
+    std::cout << l << "\n";
+
 }
 
 int main() {

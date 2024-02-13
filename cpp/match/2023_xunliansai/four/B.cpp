@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,57 +30,48 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
+const int N = 1e6 + 10;
+std::vector<int> f(N);
 
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
+void init() {
+	for (int i = 1; i < 10; i++) {
+		f[i] = 1;
+	}
+	for (int i = 10; i < N; i++) {
+		int m = i, k = 0;
+		while (m) {
+			k += m % 10;
+			m /= 10;
+		}
+		bool pd = false;
+		for (int j = 1; j <= std::min(k, j); j++) {
+			if (!f[i - j]) {
+				pd = true;
+			}
+		}
+		if (pd) {
+			f[i] = 1;
+		} else {
+			f[i] = 0;
+		}
+	}
+}
 
 void solve() {
-    
+    int n;
+    std::cin >> n;
+    if (f[n]) {
+    	std::cout << "A\n";
+    } else {
+    	std::cout << "B\n";
+    }
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    init();
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

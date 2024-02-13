@@ -15,7 +15,6 @@
 #include <bitset>
 #include <functional>
 #include <ranges>
-#include <numeric>
 // #include <bits/stdc++.h>
 // priority_queue 优先队列
 // std::cout.flush(); 交互题
@@ -31,57 +30,56 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-struct DSU {
-    std::vector<int> p, siz;
-    int num;
-
-    DSU() {}
-    DSU(int n) {
-        init(n);
-    }
-
-    void init(int n) {
-        num = n;
-        p.resize(n);
-        std::iota(p.begin(), p.end(), 0);
-        siz.assign(n, 1);
-    }
-
-    int find(int u) {
-        if (u != p[u]) {
-            p[u] = find(p[u]);
-        }
-        return p[u];
-    }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
-
-    bool merge(int u, int v) {
-        int fa_u = find(u), fa_v = find(v);
-        if (fa_u == fa_v) {
-            return false;
-        }
-        siz[fa_u] += siz[fa_v];
-        p[fa_v] = fa_u;
-        return true;
-    }
-
-    int size(int u) {
-        return siz[find(u)];
-    }
-
-};
-
 void solve() {
-    
+    LL a, b, r;
+    std::cin >> a >> b >> r;
+    if (a < b) {
+    	std::swap(a, b);
+    }
+    bool pd = false, limit = false;
+    std::vector<int> d(64);
+    for (int i = 62; i >= 0; i--) {
+    	if ((a >> i & 1) != (b >> i & 1)) {
+    		if ((a >> i & 1)) {
+    			if (pd) {
+    				if (limit || (r >> i & 1)) {
+    					d[i] = 1;
+    				}
+    			} else {
+    				pd = true;
+    				if ((r >> i & 1)) {
+    					limit = true;
+    				}
+    			}
+    		} else {
+    			if ((r >> i & 1)) {
+    				limit = true;
+    			}
+    		}
+    	} else {
+    		if ((r >> i & 1)) {
+    			limit = true;
+    		}
+    	}
+    }
+
+    LL x = 0;
+    for (int i = 0; i <= 62; i++) {
+    	if (d[i]) {
+    		x += (1ll << i);
+    	}
+    }
+
+    // std::cout << x << "\n";
+
+    std::cout << std::abs((a ^ x) - (b ^ x)) << "\n";
+
 }
 
 int main() {
     IOS;
     int t = 1;
-    // std::cin >> t;
+    std::cin >> t;
     while (t -- )
         solve();
     return 0;

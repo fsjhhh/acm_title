@@ -30,7 +30,6 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-#define int long long
 struct Node {
     int l, r;
     int sum;
@@ -126,35 +125,12 @@ struct SegmentTree {
     }
 
 };
+
 void solve() {
-    int n, m;
-    std::cin >> n >> m;
-    SegmentTree tr(n + 1);
-    std::vector<int> a(n + 1);
-    for (int i = 1; i <= n; i++) {
-        std::cin >> a[i];
-    }
-
-    tr.build(1, 1, n, a);
-
-    while (m -- ) {
-        int op;
-        std::cin >> op;
-        if (op == 1) {
-            int x, y, k;
-            std::cin >> x >> y >> k;
-            tr.modify(1, x, y, k);
-        } else {
-            int x, y;
-            std::cin >> x >> y;
-            Node res = tr.query(1, x, y);
-            std::cout << res.sum << "\n";
-        }
-    }
-
+    
 }
 
-signed main() {
+int main() {
     IOS;
     int t = 1;
     // std::cin >> t;
