@@ -1,7 +1,12 @@
+*
+
+!*.*
+
+!*/
+
 *.prob
 *.txt
 *.exe
 *.cpp__tests
 *.bin
 *.sh
-*.
