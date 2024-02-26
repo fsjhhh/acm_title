@@ -32,8 +32,8 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 struct Node {
     int l, r;
-    int sum;
-    int lazy;
+    int sum = 0;
+    int lazy = 0;
 };
 
 struct SegmentTree {

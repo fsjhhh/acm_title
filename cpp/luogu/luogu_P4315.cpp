@@ -30,9 +30,11 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
+#define int long long
+
 struct HLD {
     int n;
-    std::vector<int> siz, top, dep, parent, in, out, seq;
+    std::vector<int> siz, top, dep, parent, in, out, seq, w;
     std::vector<std::vector<int>> adj;
     int cur;
     
@@ -49,6 +51,7 @@ struct HLD {
         in.resize(n);
         out.resize(n);
         seq.resize(n);
+        w.resize(n);
         cur = 0;
         adj.assign(n, {});
     }
@@ -88,7 +91,7 @@ struct HLD {
         }
         out[u] = cur;
     }
-    int lca(int u, int v) {
+    int lca(int u, int v) { // 最近公共祖先
         while (top[u] != top[v]) {
             if (dep[top[u]] > dep[top[v]]) {
                 u = parent[top[u]];
@@ -99,11 +102,11 @@ struct HLD {
         return dep[u] < dep[v] ? u : v;
     }
     
-    int dist(int u, int v) {
+    int dist(int u, int v) { // 两点间的距离
         return dep[u] + dep[v] - 2 * dep[lca(u, v)];
     }
     
-    int jump(int u, int k) {
+    int jump(int u, int k) { // u点向上跳k步到达的点
         if (dep[u] < k) {
             return -1;
         }
@@ -117,11 +120,11 @@ struct HLD {
         return seq[in[u] - dep[u] + d];
     }
     
-    bool isAncester(int u, int v) {
+    bool isAncester(int u, int v) { // u是否是v的祖先节点
         return in[u] <= in[v] && in[v] < out[u];
     }
     
-    int rootedParent(int u, int v) {
+    int rootedParent(int u, int v) { // 以v为跟的树中u节点的父节点
         std::swap(u, v);
         if (u == v) {
             return u;
@@ -135,7 +138,7 @@ struct HLD {
         return *it;
     }
     
-    int rootedSize(int u, int v) {
+    int rootedSize(int u, int v) { // 以u为根的树中v子树的大小
         if (u == v) {
             return n;
         }
@@ -145,24 +148,23 @@ struct HLD {
         return n - siz[rootedParent(u, v)];
     }
     
-    int rootedLca(int a, int b, int c) {
+    int rootedLca(int a, int b, int c) { // (a, b, c)的最近公共祖先
         return lca(a, b) ^ lca(b, c) ^ lca(c, a);
     }
 };
 
 struct Node {
     int l, r; // 区间为[l, r)
-    LL sum = 0;
-    LL lazy = 0;
+    LL mx = 0;
+    LL lazy1 = -1;
+    LL lazy2 = 0;
 };
 
 struct SegmentTree {
-    LL P;
     std::vector<Node> tr;
 
     SegmentTree() {}
-    SegmentTree(int n, LL p) {
-        P = p;
+    SegmentTree(int n) {
         init(n);
     }
 
@@ -171,51 +173,76 @@ struct SegmentTree {
     }
 
     void merge_node(Node& res, Node x, Node y) {
-        res.sum = (x.sum + y.sum) % P;
+        res.mx = std::max(x.mx, y.mx);
     }
 
     void push_up(int u) {
         merge_node(tr[u], tr[u << 1], tr[u << 1 | 1]);
     }
 
-    void build(int u, int l, int r, std::vector<LL>& w, HLD& hld) { // 建树区间为[l, r)
+    void build(int u, int l, int r, HLD& hld) { // 建树区间为[l, r)
         tr[u].l = l;
         tr[u].r = r;
         if (r - l == 1) {
-            tr[u].lazy = 0;
-            tr[u].sum = w[hld.seq[l]];
+            tr[u].lazy1 = -1;
+            tr[u].lazy2 = 0;
+            tr[u].mx = hld.w[hld.seq[l]];
             return ;
         }
-        tr[u].lazy = 0;
+        tr[u].lazy1 = -1;
+        tr[u].lazy2 = 0;
         int mid = (l + r) >> 1;
-        build(u << 1, l, mid, w, hld);
-        build(u << 1 | 1, mid, r, w, hld);
+        build(u << 1, l, mid, hld);
+        build(u << 1 | 1, mid, r, hld);
         push_up(u);
     }
 
     void push_down(int u) {
-        if (!tr[u].lazy) {
-            return ;
+        if (tr[u].lazy1 != -1) {
+            tr[u << 1].lazy2 = tr[u << 1 | 1].lazy2 = 0;
+            tr[u << 1].lazy1 = tr[u].lazy1;
+            tr[u << 1].mx = tr[u].lazy1;
+            tr[u << 1 | 1].lazy1 = tr[u].lazy1;
+            tr[u << 1 | 1].mx = tr[u].lazy1;
+            tr[u].lazy1 = -1;
         }
-        (tr[u << 1].lazy += tr[u].lazy) %= P;
-        (tr[u << 1].sum += tr[u].lazy * (tr[u << 1].r - tr[u << 1].l) % P) %= P;
-        (tr[u << 1 | 1].lazy += tr[u].lazy) %= P;
-        (tr[u << 1 | 1].sum += tr[u].lazy * (tr[u << 1 | 1].r - tr[u << 1 | 1].l) % P) %= P;
-        tr[u].lazy = 0;
+        if (tr[u].lazy2) {
+            tr[u << 1].lazy2 += tr[u].lazy2;
+            tr[u << 1].mx += tr[u].lazy2;
+            tr[u << 1 | 1].lazy2 += tr[u].lazy2;
+            tr[u << 1 | 1].mx += tr[u].lazy2;
+            tr[u].lazy2 = 0;
+        }
     }
 
-    void modify(int u, int l, int r, int x) { // 修改区间为[l, r)
+    void modify1(int u, int l, int r, int x) { // 修改区间为[l, r)
         if (tr[u].l >= r || tr[u].r <= l) {
             return ;
         }
         if (tr[u].l >= l && tr[u].r <= r) {
-            (tr[u].lazy += x) %= P;
-            (tr[u].sum += x * (tr[u].r - tr[u].l) % P) %= P;
+            tr[u].lazy2 += x;
+            tr[u].mx += x;
             return ;
         }
         push_down(u); // 单点修改可去掉
-        modify(u << 1, l, r, x);
-        modify(u << 1 | 1, l, r, x);
+        modify1(u << 1, l, r, x);
+        modify1(u << 1 | 1, l, r, x);
+        push_up(u);
+    }
+
+    void modify2(int u, int l, int r, int x) {
+        if (tr[u].l >= r || tr[u].r <= l) {
+            return ;
+        }
+        if (tr[u].l >= l && tr[u].r <= r) {
+            tr[u].lazy1 = x;
+            tr[u].lazy2 = 0;
+            tr[u].mx = x;
+            return ;
+        }
+        push_down(u);
+        modify2(u << 1, l, r, x);
+        modify2(u << 1 | 1, l, r, x);
         push_up(u);
     }
 
@@ -226,8 +253,8 @@ struct SegmentTree {
         if (l <= tr[u].l && r >= tr[u].r) {
             return tr[u];
         }
-        Node ans;
         push_down(u); // 单点修改可去掉
+        Node ans;
         merge_node(ans, query(u << 1, l, r), query(u << 1 | 1, l, r));
         push_up(u);
         return ans;
@@ -236,90 +263,108 @@ struct SegmentTree {
 };
 
 void solve() {
-    int n, m, r, p;
-    std::cin >> n >> m >> r >> p;
-    r -- ;
-
-    std::vector<LL> a(n);
-    for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        a[i] %= p;
-    }
+    int n;
+    std::cin >> n;
 
     HLD hld(n);
+    std::vector<int> cn(n);
+    std::vector<std::vector<std::array<int, 3>>> edges(n);
     for (int i = 1; i < n; i++) {
-        int u, v;
-        std::cin >> u >> v;
-        u -- ;
-        v -- ;
+        int u, v, w;
+        std::cin >> u >> v >> w;
+        u --, v -- ;
         hld.addEdge(u, v);
+        edges[u].push_back({v, w, i});
+        edges[v].push_back({u, w, i});
     }
 
-    hld.work(r);
+    auto dfs = [&](auto self, int u, int fa) -> void {
+        for (auto it : edges[u]) {
+            int v = it[0], x = it[1], i = it[2];
+            if (v == fa) {
+                continue;
+            }
+            hld.w[v] = x;
+            cn[i] = v;
+            self(self, v, u);
+        }
+    };
+    dfs(dfs, 0, -1);
 
-    SegmentTree sg(n, p);
+    hld.work();
 
-    sg.build(1, 0, n, a, hld);
+    SegmentTree sg(n);
+    sg.build(1, 0, n, hld);
 
-    while (m -- ) {
-        int op;
-        std::cin >> op;
-        if (op == 1) {
-            int x, y;
-            LL z;
-            std::cin >> x >> y >> z;
-            x -- , y -- ;
-            z %= p;
+    while (1) {
+        std::string s;
+        std::cin >> s;
+        if (s == "Stop") {
+            break;
+        }
+        if (s == "Change") {
+            int k, w;
+            std::cin >> k >> w;
+            sg.modify2(1, hld.in[cn[k]], hld.in[cn[k]] + 1, w);
+        } else if (s == "Cover") {
+            int x, y, w;
+            std::cin >> x >> y >> w;
+            x -- ;
+            y -- ;
+            int z = hld.lca(x, y);
             while (hld.top[x] != hld.top[y]) {
                 if (hld.dep[hld.top[x]] < hld.dep[hld.top[y]]) {
                     std::swap(x, y);
                 }
-                sg.modify(1, hld.in[hld.top[x]], hld.in[x] + 1, z);
+                sg.modify2(1, hld.in[hld.top[x]] + (hld.top[x] != z ? 0 : 1), hld.in[x] + 1, w);
                 x = hld.parent[hld.top[x]];
             }
             if (hld.dep[x] > hld.dep[y]) {
                 std::swap(x, y);
             }
-            sg.modify(1, hld.in[x], hld.in[y] + 1, z);
-        } else if (op == 2) {
+            sg.modify2(1, hld.in[x] + (x != z ? 0 : 1), hld.in[y] + 1, w);
+        } else if (s == "Add") {
+            int x, y, w;
+            std::cin >> x >> y >> w;
+            x -- ;
+            y -- ;
+            int z = hld.lca(x, y);
+            while (hld.top[x] != hld.top[y]) {
+                if (hld.dep[hld.top[x]] < hld.dep[hld.top[y]]) {
+                    std::swap(x, y);
+                }
+                sg.modify1(1, hld.in[hld.top[x]] + (hld.top[x] != z ? 0 : 1), hld.in[x] + 1, w);
+                x = hld.parent[hld.top[x]];
+            }
+            if (hld.dep[x] > hld.dep[y]) {
+                std::swap(x, y);
+            }
+            sg.modify1(1, hld.in[x] + (x != z ? 0 : 1), hld.in[y] + 1, w);
+        } else {
             int x, y;
             std::cin >> x >> y;
-            x -- , y -- ;
+            x -- ;
+            y -- ;
+            int z = hld.lca(x, y);
             Node ans;
             while (hld.top[x] != hld.top[y]) {
                 if (hld.dep[hld.top[x]] < hld.dep[hld.top[y]]) {
                     std::swap(x, y);
                 }
-                // Node res = sg.query(1, hld.in[hld.top[x]], hld.in[x] + 1);
-                sg.merge_node(ans, ans, sg.query(1, hld.in[hld.top[x]], hld.in[x] + 1));
+                sg.merge_node(ans, ans, sg.query(1, hld.in[hld.top[x]] + (hld.top[x] != z ? 0 : 1), hld.in[x] + 1));
                 x = hld.parent[hld.top[x]];
             }
             if (hld.dep[x] > hld.dep[y]) {
                 std::swap(x, y);
             }
-            // Node res = sg.query(1, hld.in[x], hld.in[y] + 1);
-            sg.merge_node(ans, ans, sg.query(1, hld.in[x], hld.in[y] + 1));
-            std::cout << ans.sum << "\n";
-        } else if (op == 3) {
-            int x;
-            LL z;
-            std::cin >> x >> z;
-            z %= p;
-            x -- ;
-            sg.modify(1, hld.in[x], hld.out[x], z);
-        } else {
-            int x;
-            std::cin >> x;
-            x -- ;
-            Node ans = sg.query(1, hld.in[x], hld.out[x]);
-            std::cout << ans.sum << "\n";
+            sg.merge_node(ans, ans, sg.query(1, hld.in[x] + (x != z ? 0 : 1), hld.in[y] + 1));
+            std::cout << ans.mx << "\n";
         }
     }
 
-
 }
 
-int main() {
+signed main() {
     IOS;
     int t = 1;
     // std::cin >> t;
