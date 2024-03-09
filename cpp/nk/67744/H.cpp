@@ -29,26 +29,28 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
+#define int long long
+
 template <typename T>
 struct Fenwick {
     int n;
     std::vector<T> a;
-
+ 
     Fenwick(int n_ = 0) {
         init(n_);
     }
-
+ 
     void init(int n_) {
         n = n_;
         a.assign(n, T{});
     }
-
+ 
     void add(int x, const T &v) {
         for (int i = x + 1; i <= n; i += i & -i) {
             a[i - 1] = a[i - 1] + v;
         }
     }
-
+ 
     T sum(int x) {
         T ans{};
         for (int i = x; i > 0; i -= i & -i) {
@@ -56,11 +58,10 @@ struct Fenwick {
         }
         return ans;
     }
-
+ 
     T rangeSum(int l, int r) {
         return sum(r) - sum(l);
     }
-
 };
 
 void solve() {
@@ -72,66 +73,93 @@ void solve() {
     }
 
     LL ans = 0;
-    std::map<int, int> mp_1, mp_2;
-    std::vector zx(n, std::vector<int>(m)), fx(n, std::vector<int>(m));
+    std::vector zx(n, std::vector<int>(m, 0)), fx(n, std::vector<int>(m, 0));
     for (int i = 0; i < n; i++) {
-        int cnt = 0;
-        Fenwick<LL> bit_1(m), bit_2(m);
         for (int j = 0; j < m; j++) {
             if (mp[i][j] == '*') {
                 if (i > 0 && j > 0) {
-                    zx[i][j] = zx[i - 1][j - 1];
+                    fx[i][j] = fx[i - 1][j - 1];
                 }
                 if (i > 0 && j < m - 1) {
-                    fx[i][j] = fx[i - 1][j + 1];
+                    zx[i][j] = zx[i - 1][j + 1];
                 }
-                zx[i][j] ++ ;
                 fx[i][j] ++ ;
-                cnt ++ ;
-                int x = std::min(2 * zx[i][j] - 1, cnt);
-                if (cnt >= 3 && zx[i][j] > 1) {
-                    if (cnt % 2) {
-                        ans += bit_1.rangeSum(j - x, j + 1);
-                    } else {
-                        ans += bit_2.rangeSum(j - x, j + 1);
-                    }
-                }
-            } else {
-                cnt = 0;
-                for (auto [x, y] : mp_1) {
-                    bit_1.add(x, - y);
-                    mp_1[x] = 0;
-                }
-                for (auto [x, y] : mp_2) {
-                    bit_2.add(x, -y);
-                    mp_2[x] = 0;
-                }
+                zx[i][j] ++ ;
+            }
+        }
+    }
+    
+    Fenwick<int> sg(4 * m);
+    std::vector<std::vector<int>> mp1(4 * m);
+    auto calc = [&](int row, int l, int r) -> void {
+        int mx = 0, i;
+        for (i = l; i <= r; i += 2) {
+            int L = i, R = i + 2 * zx[row][i] - 2;
+            mp1[R].push_back(L);
+            mx = std::max(mx, R);
+            sg.add(i, 1);
+            R = i;
+            L = std::max(0ll, R - 2 * fx[row][i] + 2);
+            ans += sg.rangeSum(L, i + 1);
+            for (auto j : mp1[i]) {
+                sg.add(j, -1);
+            }
+            mp1[i].clear();
+        }
+        for (; i <= mx; i += 2) {
+            for (auto j : mp1[i]) {
+                sg.add(j, -1);
+            }
+            mp1[i].clear();
+        }
+        
+        mx = 0;
+        for (i = l + 1; i <= r; i += 2) {
+            int L = i, R = i + 2 * zx[row][i] - 2;
+            mp1[R].push_back(L);
+            mx = std::max(mx, R);
+            sg.add(i, 1);
+            R = i;
+            L = std::max(0ll, R - 2 * fx[row][i] + 2);
+            ans += sg.rangeSum(L, i + 1);
+            for (auto j : mp1[i]) {
+                sg.add(j, -1);
+            }
+            mp1[i].clear();
+        }
+        for (; i <= mx; i += 2) {
+            for (auto j : mp1[i]) {
+                sg.add(j, -1);
+            }
+            mp1[i].clear();
+        }
+        
+    };
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (mp[i][j] == '.') {
                 continue;
             }
-            if (cnt % 2) {
-                int x = std::min(m - 1, j - 1 + 2 * fx[i][j] - 1);
-                bit_1.add(j, 1);
-                mp_1[x] ++ ;
-            } else {
-                int x = std::min(m - 1, j - 1 + 2 * fx[i][j] - 1);
-                bit_2.add(j, 1);
-                mp_2[x] ++ ;
+            int k = j;
+            while (k < m && mp[i][k] == '*') {
+                k ++ ;
             }
-            if (mp_1[j]) {
-                bit_1.add(j, -mp_1[j]);
-                mp_1[j] = 0;
-            }
-            if (mp_2[j]) {
-                bit_2.add(j, -mp_2[j]);
-                mp_2[j] = 0;
-            }
+            calc(i, j, k - 1);
+            j = k - 1;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            ans -= (mp[i][j] == '*');
         }
     }
 
     std::cout << ans << "\n";
 }
 
-int main() {
+signed main() {
     IOS;
     int t = 1;
     // std::cin >> t;
