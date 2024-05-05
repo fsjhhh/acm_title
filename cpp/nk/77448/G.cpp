@@ -30,52 +30,40 @@ typedef std::pair<LL, LL> PLL;
 const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
-int ask(int i, int j, int x) {
-    std::cout << "? " << i << " " << j << " " << x << "\n";
-    std::cout.flush();
-    int res;
-    std::cin >> res;
-    return res;
-}
-
 void solve() {
-    int n, k;
-    std::cin >> n >> k;
-    std::vector st(n + 1, std::vector<int>(n + 1, -1));
+    int n;
+    std::cin >> n;
+    std::vector<LL> a(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> a[i];
+    }
 
-    auto check = [&](int x) -> int {
-        int ans = 0, j = 1, ls = 0;
-        for (int i = n; i >= 1; i--) {
-            while (j <= n && ask(i, j, x)) {
-                ls ++ ;
-                j ++ ;
+    auto check = [&](LL x) -> bool {
+        LL ls = 0;
+        for (int i = 0; i < n; i++) {
+            if (a[i] + ls < x) {
+                x += a[i] / 2;
+                ls = (a[i] + 1) / 2;
+            } else {
+                return false;
             }
-            ans += ls;
         }
-        // std::cout << "ans: " << ans << "\n";
-        // std::cout.flush();
-        return ans;
+        return true;
     };
 
-    int l = 1, r = n * n;
-    k = n * n - k + 1;
+    LL l = 1, r = 1e18 + 10;
     while (l < r) {
-        int mid = (l + r) >> 1;
-        // std::cout << "mid: " << mid << "\n";
-        // std::cout.flush();
-        if (check(mid) >= k) {
+        LL mid = (l + r) >> 1;
+        if (check(mid)) {
             r = mid;
         } else {
             l = mid + 1;
         }
     }
-    // for (int i = 1; i <= n; i++) {
-    //     for (int j = 1; j <= n; j++) {
-    //         std::cout << st[i][j] << " \n"[j == n];
-    //     }
-    // }
-    std::cout << "! " << l << "\n";
-} 
+
+    std::cout << l << "\n";
+
+}
 
 int main() {
     IOS;
@@ -85,4 +73,3 @@ int main() {
         solve();
     return 0;
 }
-
