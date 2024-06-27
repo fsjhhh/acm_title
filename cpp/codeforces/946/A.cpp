@@ -31,22 +31,15 @@ const int INF = 0x3f3f3f3f;
 const LL INFL = 0x3f3f3f3f3f3f3f3f;
 
 void solve() {
-    int n;
-    std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
-    for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
+    int x, y;
+    std::cin >> x >> y;
+    int ans = (y + 1) / 2, c = 7 * (y / 2) + 11 * (y % 2);
+    if (c >= x) {
+        std::cout << ans << "\n";
+    } else {
+        x -= c;
+        std::cout << ans + (x + 14) / 15 << "\n";
     }
-
-    for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
-    }
-
-    std::cout << "\n";
-
 }
 
 int main() {

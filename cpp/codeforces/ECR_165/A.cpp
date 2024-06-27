@@ -33,19 +33,23 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 void solve() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
+    std::vector<int> p(n);
     for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
+        std::cin >> p[i];
     }
 
+    bool ok = false;
     for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+        if (p[p[i] - 1] - 1 == i) {
+            ok = true;
+        }
     }
 
-    std::cout << "\n";
+    if (ok) {
+        std::cout << "2\n";
+    } else {
+        std::cout << "3\n";
+    }
 
 }
 

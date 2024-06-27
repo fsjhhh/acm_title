@@ -33,19 +33,25 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 void solve() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
-    for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
+    std::string s;
+    std::cin >> s;
+    std::set<char> S;
+    for (auto it : s) {
+        S.insert(it);
     }
 
-    for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+    std::vector<char> a(S.begin(), S.end());
+
+    std::map<char, char> mp;
+    for (int i = 0, j = (int)a.size() - 1; i <= j; i++, j--) {
+        mp[a[i]] = a[j];
+        mp[a[j]] = a[i];
     }
 
-    std::cout << "\n";
+    for (auto& it : s) {
+        it = mp[it];
+    }
+    std::cout << s << "\n";
 
 }
 

@@ -33,19 +33,50 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 void solve() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
+    std::vector<int> p(n);
+    std::map<int, int> mp;
     for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
+        std::cin >> p[i];
+        mp[p[i]] = i;
+    }
+
+    int _1 = 0;
+    for (int i = 0; i < n; i++) {
+        if (p[i] == 1) {
+            _1 = i;
+            break;
+        }
+    }
+
+    int l = _1 - 1, r = _1 + 1;
+    std::set<int> s;
+    while (l > 0) {
+        s.insert(p[l]);
+        l -= 2;
+    }
+    while (r < n - 1) {
+        s.insert(p[r]);
+        r += 2;
+    }
+
+    std::sort(p.begin(), p.end(), [&](int x, int y) -> bool {
+        if (s.count(x) > s.count(y)) {
+            return true;
+        } else if (s.count(x) < s.count(y)) {
+            return false;
+        } else {
+            return x < y;
+        }
+    });
+    
+    std::vector<int> ans(n);
+    for (int i = n, j = 0; i > 0; i--, j++) {
+        ans[mp[p[j]]] = i;
     }
 
     for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+        std::cout << ans[i] << " \n"[i == n - 1];
     }
-
-    std::cout << "\n";
 
 }
 

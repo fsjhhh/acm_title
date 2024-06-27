@@ -33,19 +33,33 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 void solve() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
-    for (int i = 0; i < n; i++) {
+
+    std::vector<int> a(n + 1);
+    for (int i = 1; i <= n; i++) {
         std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
     }
 
-    for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+    // if (n == 1) {
+    //     std::cout << "0\n";
+    //     return ;
+    // }
+
+    std::vector<int> pre1(n + 1), pre2(n + 1), suf1(n + 2), suf2(n + 2);
+    for (int i = 1; i <= n; i++) {
+        pre1[i] = pre1[i - 1] + (a[i] == 1 ? 1 : 0);
+        pre2[i] = pre2[i - 1] + (a[i] == 2 ? 1 : 0);
+    }
+    for (int i = n; i > 0; i--) {
+        suf1[i] = suf1[i + 1] + (a[i] == 1 ? 1 : 0);
+        suf2[i] = suf2[i + 1] + (a[i] == 2 ? 1 : 0);
     }
 
-    std::cout << "\n";
+    int ans = INF;
+    for (int i = 0; i <= n; i++) {
+        // std::cout << pre1[i] + suf2[i + 1] << " " << pre2[i] + suf1[i + 1] << "\n";
+        ans = std::min({ans, pre1[i] + suf2[i + 1], pre2[i] + suf1[i + 1]});
+    }
+    std::cout << ans << "\n";
 
 }
 

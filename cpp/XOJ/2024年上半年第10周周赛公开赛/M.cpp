@@ -33,19 +33,51 @@ const LL INFL = 0x3f3f3f3f3f3f3f3f;
 void solve() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
+    std::vector mp(n, std::vector<int>(n));
     for (int i = 0; i < n; i++) {
-        std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
+        for (int j = 0; j < n; j++) {
+            std::cin >> mp[i][j];
+        }
     }
 
+    std::set<int> s;
+
+    auto check = [&](int x, int y) -> bool {
+        bool ok = false;
+        for (int i = 0; i < n; i++) {
+            if (mp[i][y] != mp[x][y]) {
+                ok = true;
+                break;
+            }
+        }
+    
+        if (!ok) {
+            return true;
+        }
+
+        ok = false;
+        for (int i = 0; i < n; i++) {
+            if (mp[x][i] != mp[x][y]) {
+                ok = true;
+            }
+        }
+
+        return (!ok);
+
+    };
+
     for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+        for (int j = 0; j < n; j++) {
+            if (mp[i][j] && check(i, j)) {
+                s.insert(mp[i][j]);
+            }
+        }
     }
 
-    std::cout << "\n";
+    std::cout << s.size() << "\n";
+    for (auto it : s) {
+        std::cout << it << " \n"[it == (*s.rbegin())];
+    }
 
 }
 

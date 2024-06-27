@@ -34,18 +34,57 @@ void solve() {
     int n;
     std::cin >> n;
     std::vector<int> a(n);
-    std::map<int, std::priority_queue<int, std::vector<int>, std::greater<int>>> mp;
     for (int i = 0; i < n; i++) {
         std::cin >> a[i];
-        mp[a[i] >> 2].push(a[i]);
     }
 
-    for (int i = 0; i < n; i++) {
-        std::cout << mp[a[i] >> 2].top() << " ";
-        mp[a[i] >> 2].pop();
+    LL ans = 0;
+    std::map<PII, std::map<int, int>> mp;
+    for (int i = 2; i < n; i++) {
+        mp[{a[i], a[i - 1]}][a[i - 2]] ++ ;
     }
 
-    std::cout << "\n";
+    for (auto [x, y] : mp) {
+        LL sum = 0;
+        for (auto [u , v] : y) {
+            sum += v;
+        }
+        for (auto [u, v] : y) {
+            ans += 1ll * v * (sum - v);
+        }
+    }
+
+    mp.clear();
+    for (int i = 1; i < n - 1; i++) {
+        mp[{a[i], a[i - 1]}][a[i + 1]] ++ ;
+    }
+
+    for (auto [x, y] : mp) {
+        LL sum = 0;
+        for (auto [u , v] : y) {
+            sum += v;
+        }
+        for (auto [u, v] : y) {
+            ans += 1ll * v * (sum - v);
+        }
+    }
+
+    mp.clear();
+    for (int i = 2; i < n; i++) {
+        mp[{a[i], a[i - 2]}][a[i - 1]] ++ ;
+    }
+
+    for (auto [x, y] : mp) {
+        LL sum = 0;
+        for (auto [u , v] : y) {
+            sum += v;
+        }
+        for (auto [u, v] : y) {
+            ans += 1ll * v * (sum - v);
+        }
+    }
+
+    std::cout << ans / 2 << "\n";
 
 }
 
